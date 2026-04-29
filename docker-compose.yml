@@ -1,0 +1,22 @@
+services:
+  tg-vid-converter:
+    build: .
+    image: tg-vid-converter
+    container_name: tg-vid-converter
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_IDS=${TELEGRAM_CHAT_IDS}
+      - ALLOWED_SUBNET=${ALLOWED_SUBNET:-}
+      - FFMPEG_PATH=${FFMPEG_PATH:-ffmpeg}
+      - PORT=8080
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
