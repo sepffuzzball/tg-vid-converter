@@ -253,6 +253,7 @@ async def convert_url_and_send(
     send_to_telegram: bool = Form(True),
     caption: Optional[str] = Form(None),
     chat_ids: Optional[str] = Form(None),
+    auth_token: Optional[str] = Form(None),
 ):
     """Download a video from a URL, convert with ffmpeg, send to Telegram.
 
@@ -263,7 +264,12 @@ async def convert_url_and_send(
 
     tmp_dir = tempfile.mkdtemp()
     try:
-        async with httpx.AsyncClient(timeout=120, follow_redirects=True) as client:
+        # Build headers for Unifi Protect / protected URLs
+        headers = {}
+        if auth_token:
+            headers["Authorization"] = f"Bearer {auth_token}"
+
+        async with httpx.AsyncClient(timeout=120, follow_redirects=True, headers=headers) as client:
             resp = await client.get(url)
             if resp.status_code != 200:
                 raise HTTPException(
