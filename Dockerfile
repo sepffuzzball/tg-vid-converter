@@ -13,7 +13,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py .
+COPY app.py version.py .
 
 # Create temp directory with proper permissions
 RUN mkdir -p /tmp/tg-vid && chown appuser:appuser /tmp/tg-vid
