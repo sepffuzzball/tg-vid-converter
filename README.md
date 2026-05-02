@@ -231,7 +231,7 @@ shell_command:
 
 ### Option C: Using the /convert-url Endpoint
 
-If your Unifi Protect instance exposes video URLs that are accessible from the converter container, you can use the URL-based endpoint:
+If your Unifi Protect instance exposes video URLs that are accessible from the converter container, you can use the URL-based endpoint. This is useful when Unifi Protect provides a direct video URL with Bearer token authentication:
 
 ```yaml
 rest_command:
@@ -240,7 +240,7 @@ rest_command:
     method: POST
     content_type: "application/x-www-form-urlencoded"
     payload: >-
-      url={{ video_url }}&caption={{ caption }}&crf=28&preset=fast
+      url={{ video_url }}&caption={{ caption }}&crf=28&preset=fast&auth_token={{ protect_token }}
 
 automation:
   - alias: "Send Unifi Protect URL to Telegram"
@@ -253,7 +253,10 @@ automation:
         data:
           video_url: "{{ state_attr('camera.your_unifi_camera', 'video_url') }}"
           caption: "Motion detected on {{ state_attr('camera.your_unifi_camera', 'friendly_name') }}"
+          protect_token: "{{ states('sensor.unifi_protect_auth_token') }}"
 ```
+
+The `auth_token` parameter will be sent as a Bearer token in the HTTP request headers when fetching the video URL. This is required for Unifi Protect clips that need authentication.
 
 ### Tips for Home Assistant Integration
 
